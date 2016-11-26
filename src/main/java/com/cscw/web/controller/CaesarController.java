@@ -44,22 +44,28 @@ import com.huisa.common.exception.ServiceException;
 @RequestMapping(value = "/caesar")
 public class CaesarController {
 	
-	
+	/*
+	 * 得到初始页面
+	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String login(Model model) {
-		
 		return "password/caesar";
 	}
 
-	
-	//decrypt
+	/*
+	 * 
+	 * 加密
+	 */
 	@RequestMapping(value = "/encrypt")
 	@ResponseBody
 	public void count(Model model) {
+		//从前端获取mingwen_num（凯撒密码的移动位数）  和mingwen(明文） 两个变量
 		int num = MVCUtil.getIntParam("mingwen_num");
 		String p = MVCUtil.getParam("mingwen");
+		
 		AjaxData ajaxdata;
 		String msg = null;
+		//判断输入
 		if(num<1||num>25){
 			msg = "输入口令不规范	";
 		}
@@ -67,21 +73,30 @@ public class CaesarController {
 			msg = "输入明文不能为空";
 					
 		}
+		//如输入不规范则返回前端错误信息
 		if (StringUtils.isNotBlank(msg)) {
 			ajaxdata = new AjaxData(false, null, msg);
 	           MVCUtil.ajaxJson(ajaxdata);
 	           return;
 	    }
+		
+		
 		char[] pArray = p.toLowerCase().toCharArray();
 		for(int i = 0 ;i<pArray.length;i++	){
 			int ci = (int)pArray[i] - 'a';
 			pArray[i]= (char) ((ci+num)%26+'a') ;
 		}
+		
+		//以json格式返回前端
 		JsonObject o = new JsonObject();
 		o.addProperty("password", new String(pArray));
 		ajaxdata = new AjaxData(true, o, null);
 		MVCUtil.ajaxJson(ajaxdata);
 	}
+	
+	/*
+	 * 解密
+	 */
 	
 	@RequestMapping(value = "/decrypt")
 	@ResponseBody
@@ -114,31 +129,31 @@ public class CaesarController {
 		MVCUtil.ajaxJson(ajaxdata);
 	}
 
-	@Test
-	public void test(){
-		int num =3;
-		String p ="abcd";
-		AjaxData ajaxdata;
-		String msg = null;
-		if(num<1||num>25){
-			msg = "输入口令不规范	";
-		}
-		if(!StringUtils.isNotBlank(p)){
-			msg = "输入明文不能为空";
-					
-		}
-		if (StringUtils.isNotBlank(msg)) {
-			ajaxdata = new AjaxData(false, null, msg);
-	           MVCUtil.ajaxJson(ajaxdata);
-	           return;
-	    }
-		char[] pArray = p.toLowerCase().toCharArray();
-		for(int i = 0 ;i<pArray.length;i++	){
-			int ci = (int)pArray[i] - 'a';
-			pArray[i]= (char) ((ci+num)%26+'a') ;
-		}
-		System.out.println(new String(pArray));
-	}
+//	@Test
+//	public void test(){
+//		int num =3;
+//		String p ="abcd";
+//		AjaxData ajaxdata;
+//		String msg = null;
+//		if(num<1||num>25){
+//			msg = "输入口令不规范	";
+//		}
+//		if(!StringUtils.isNotBlank(p)){
+//			msg = "输入明文不能为空";
+//					
+//		}
+//		if (StringUtils.isNotBlank(msg)) {
+//			ajaxdata = new AjaxData(false, null, msg);
+//	           MVCUtil.ajaxJson(ajaxdata);
+//	           return;
+//	    }
+//		char[] pArray = p.toLowerCase().toCharArray();
+//		for(int i = 0 ;i<pArray.length;i++	){
+//			int ci = (int)pArray[i] - 'a';
+//			pArray[i]= (char) ((ci+num)%26+'a') ;
+//		}
+//		System.out.println(new String(pArray));
+//	}
 	
 	
 

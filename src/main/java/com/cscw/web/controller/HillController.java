@@ -39,7 +39,10 @@ import com.huisa.common.exception.ServiceException;
 @RequestMapping(value = "/hill")
 public class HillController {
 	
-	
+	/*
+	 * 
+	 * 进入初始页面并得到加密矩阵 、 解密矩阵
+	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		//int[][] juzhen =  {{17,17,5},{21,18,21},{2,2,19}};
@@ -52,9 +55,7 @@ public class HillController {
 				}
 			}
 
-			
-			
-			nijuzhen = getNiJuzhen(juzhen);
+			nijuzhen = getNiJuzhen(juzhen); //获得逆矩阵
 		}while(nijuzhen==null);
 	
 		model.addAttribute("juzhen", juzhen);
@@ -84,35 +85,19 @@ public class HillController {
 	}
 
 	
-//	//decrypt
-//	@RequestMapping(value = "/getJuzhen")
-//	@ResponseBody
-//	public void getJuzhen(){
-//		
-//		int[][] juzhen = new int[3][3];
-//
-//		int[][] nijuzhen = null;
-//		while(nijuzhen==null){
-//			for(int i = 0;i<juzhen.length;i++){
-//				for(int j=0;j<juzhen[i].length;j++){
-//					juzhen[i][j]=(int) (Math.random()*26);
-//				}
-//			}
-//			nijuzhen = getNiJuzhen(juzhen);
-//		}
-//		JSONObject o = new JSONObject();
-//		o.append("juzhen", juzhen);
-//		o.append("nijuzhen", nijuzhen);
-//		MVCUtil.ajaxJson(o.toString());
-//	
-//	}
+	/*
+	 * 加密
+	 * @param HillJuzhen juzhen 加密矩阵
+	 * @pama mingwen 明文
+	 */
 	@RequestMapping(value = "/encrypt")
 	@ResponseBody
 	public void count(HillJuzhen juzhen ) {
-	
+		
 		String mingwen = MVCUtil.getParam("mingwen");
 		AjaxData ajaxdata;
 		String msg = null;
+		//判断输入
 		if(juzhen==null){
 			msg ="矩阵不能为空";
 		}
@@ -121,11 +106,14 @@ public class HillController {
 			msg = "输入明文不能为空";
 					
 		}
+		//输入不规范返回错误信息
 		if (StringUtils.isNotBlank(msg)) {
 			ajaxdata = new AjaxData(false, null, msg);
 	           MVCUtil.ajaxJson(ajaxdata);
 	           return;
 	    }
+		
+		
 		//补充字符串，让其成为3的倍数
 		int length = mingwen.length();
 		StringBuffer mingwenBuffer = new StringBuffer(mingwen);
@@ -143,10 +131,7 @@ public class HillController {
 		for(int i = 0;i<array.length;i++){
 			array[i]= (char) (arrayc[i]-'a');
 		}
-
-		
-		
-		
+		//主要加密代码
 		for(int i = 0;i<array.length;i=i+3){
 			int C1 = juzhen.getK11()*array[i]+juzhen.getK12()*(int)array[i+1]+juzhen.getK13()*(int)array[i+2];
 			int C2 =  juzhen.getK21()*array[i]+juzhen.getK22()*(int)array[i+1]+juzhen.getK23()*(int)array[i+2];
@@ -155,16 +140,17 @@ public class HillController {
 			miwenBuffer.append((char)(C2%26+'a'));
 			miwenBuffer.append((char)(C3%26+'a'));
 		}
-		
+		//以json格式返回前端
 		JsonObject o = new JsonObject();
-	//	o.addProperty("mingwen", mingwenBuffer.toString());
-	//	o.addProperty("juzhen", juzhenString.toString());
 		o.addProperty("miwen",miwenBuffer.toString());
 		ajaxdata = new AjaxData(true, o, null);
 		MVCUtil.ajaxJson(ajaxdata);
 		return;
 	}
-	
+	/*
+	 * 解密
+	 * 
+	 */
 	@RequestMapping(value = "/decrypt")
 	@ResponseBody
 	public void decrypt(HillJuzhen juzhen) {
@@ -214,8 +200,11 @@ public class HillController {
 		MVCUtil.ajaxJson(ajaxdata);
 		return;
 	}
-
 	
+	
+	/*
+	 * 获取逆矩阵
+	 */
 	 private int[][] getNiJuzhen(int[][] juzhen) {
 	        int[] temp = {1, 0, 0};
 	        int[][] nijuzhen = new int[juzhen.length][juzhen[0].length];
@@ -245,107 +234,6 @@ public class HillController {
 	        
 	        return nijuzhen;
 	    }
-//	 @Test
-//	 public void test(){
-//		 HillJuzhen juzhen = new HillJuzhen(17,17,5,21,18,21,2,2,19);
-//		
-//		 String mingwen = "paymoremoney";
-//			AjaxData ajaxdata;
-//			String msg = null;
-//			if(juzhen==null){
-//				msg ="矩阵不能为空";
-//			}
-//			
-//			if(!StringUtils.isNotBlank(mingwen)){
-//				msg = "输入明文不能为空";
-//						
-//			}
-//			if (StringUtils.isNotBlank(msg)) {
-//				ajaxdata = new AjaxData(false, null, msg);
-//		           MVCUtil.ajaxJson(ajaxdata);
-//		           return;
-//		    }
-//			//补充字符串，让其成为3的倍数
-//			int length = mingwen.length();
-//			StringBuffer mingwenBuffer = new StringBuffer(mingwen);
-//			StringBuffer miwenBuffer = new StringBuffer();
-//			if(length%3==1){
-//				mingwenBuffer.append("xx");
-//			}else if (length%3==2){
-//				mingwenBuffer.append("x");
-//			}
-//			
-//			char[] array = mingwenBuffer.toString().toCharArray();
-//			//编程a为0的
-//			int[] arrayInt = new int[array.length];
-//			for(int i = 0;i<array.length;i++){
-//				arrayInt[i]=  (array[i]-'a');
-//			}
-//			
-//			
-//			
-//			
-//			for(int i = 0;i<array.length;i=i+3){
-//				int C1 = juzhen.getK11()*arrayInt[i]+juzhen.getK12()*arrayInt[i+1]+juzhen.getK13()*arrayInt[i+2];
-//				int C2 =  juzhen.getK21()*arrayInt[i]+juzhen.getK22()*arrayInt[i+1]+juzhen.getK23()*arrayInt[i+2];
-//				int  C3 =  juzhen.getK31()*arrayInt[i]+juzhen.getK22()*arrayInt[i+1]+juzhen.getK33()*arrayInt[i+2];
-//				miwenBuffer.append((char)(C1%26+'a'));
-//				miwenBuffer.append((char)(C2+'a'));
-//				miwenBuffer.append((char)(C3+'a'));
-//			}
-//			
-//			JsonObject o = new JsonObject();
-//		System.out.println(miwenBuffer.toString());
-//	 }
-	 
-	 @Test
-	 public void test2(){
-		HillJuzhen juzhen = new HillJuzhen(4,9,15,15,17,6,24,0,17);
-//		int[][]  juzhen = {{17,17,5},{21,18,21},{2,2,19}};
-//		juzhen = getNiJuzhen(juzhen);
-	
-			String miwen = "lnshdlewmtrw";
-			AjaxData ajaxdata;
-			String msg = null;
-			if(juzhen==null){
-				msg ="矩阵不能为空";
-			}
-			
-			if(!StringUtils.isNotBlank(miwen)){
-				msg = "输入明文不能为空";
-						
-			}
-			if (StringUtils.isNotBlank(msg)) {
-				ajaxdata = new AjaxData(false, null, msg);
-		           MVCUtil.ajaxJson(ajaxdata);
-		           return;
-		    }
-			//补充字符串，让其成为3的倍数
-			int length = miwen.length();
-			StringBuffer miwenBuffer = new StringBuffer(miwen);
-			StringBuffer mingwenBuffer = new StringBuffer();
-			if(length%3==1){
-				miwenBuffer.append("xx");
-			}else if (length%3==2){
-				miwenBuffer.append("x");
-			}
-			
-			char[] arrayc = miwen.toString().toCharArray();
-			int[] array = new int[arrayc.length];
-			for(int i = 0;i<array.length;i++){
-				array[i]= (char) (arrayc[i]-'a');
-			}
-			for(int i = 0;i<array.length;i=i+3){
-				int C1 = juzhen.getK11()*array[i]+juzhen.getK12()*array[i+1]+juzhen.getK13()*array[i+2];
-				int C2 =  juzhen.getK21()*array[i]+juzhen.getK22()*array[i+1]+juzhen.getK23()*array[i+2];
-				int  C3 =  juzhen.getK31()*array[i]+juzhen.getK32()*array[i+1]+juzhen.getK33()*array[i+2];
-				mingwenBuffer.append((char)(C1%26+'a'));
-				mingwenBuffer.append((char)(C2%26+'a'));
-				mingwenBuffer.append((char)(C3%26+'a'));
-			}
-			
-			JsonObject o = new JsonObject();
-			System.out.println(mingwenBuffer.toString());
-	 }
+
 }
 

@@ -42,14 +42,17 @@ public class PlayfairController {
 	}
 
 	
-	//decrypt
+	/*
+	 * 加密
+	 */
 	@RequestMapping(value = "/encrypt")
 	@ResponseBody
 	public void count(Model model) {
-		String keyword = MVCUtil.getParam("keyword");
-		String mingwen = MVCUtil.getParam("mingwen");
+		String keyword = MVCUtil.getParam("keyword");//前端获取密匙
+		String mingwen = MVCUtil.getParam("mingwen");//前端获取明文
 		AjaxData ajaxdata;
 		String msg = null;
+		//判断输入
 		if(keyword.length()!=8){
 			msg = "输入口令长度必须为8	";
 		}
@@ -60,11 +63,14 @@ public class PlayfairController {
 			msg = "输入明文不能为空";
 					
 		}
+		//输入若不规范则返回错误信息至前端
 		if (StringUtils.isNotBlank(msg)) {
 			ajaxdata = new AjaxData(false, null, msg);
 	           MVCUtil.ajaxJson(ajaxdata);
 	           return;
 	    }
+		
+		
 		//将j替换成i
 		if(keyword.contains("j")){
 			keyword=keyword.replaceAll("j", "i");
@@ -114,6 +120,11 @@ public class PlayfairController {
 		MVCUtil.ajaxJson(ajaxdata);
 	}
 	
+	
+	/*
+	 * 
+	 * 解密
+	 */
 	@RequestMapping(value = "/decrypt")
 	@ResponseBody
 	public void decrypt() {
@@ -178,6 +189,10 @@ public class PlayfairController {
 		ajaxdata = new AjaxData(true, o, null);
 		MVCUtil.ajaxJson(ajaxdata);
 	}
+	
+	/*
+	 * 填充矩阵
+	 */
 	private void fill( char[][] juzhen , char c,int num){
 		int i=0;
 		int j=0;
@@ -197,8 +212,10 @@ public class PlayfairController {
 		juzhen[i][j]=c;
 	}
 	
-
-	
+	/*
+	 * 
+	 * 规范化明文
+	 */
 	public String fixMingwen(String mingwen){
 		//替换双字母和最后的单字
 		char[] plain = mingwen.toCharArray();

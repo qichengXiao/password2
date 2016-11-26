@@ -1,5 +1,10 @@
-AAAA
-BBB
+14级软件04班 
+萧启程 
+3114006304
+
+实验代码的主要后端源码在src/main/java/com/cscw/web/controller包下
+前端代码在src/main/webapp/WEB-INF/view/password包下
 
 
-CCC
+本实验使用了spring mvc框架、前端使用html+css+js （bootstrap框架)
+因为为了方便开发我使用了我常用的开发框架，而且连上了远程的数据库，虽然没有项目没有用到数据库。

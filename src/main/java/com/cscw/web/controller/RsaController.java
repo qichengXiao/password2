@@ -36,7 +36,9 @@ import com.huisa.common.exception.ServiceException;
 @RequestMapping(value = "/rsa")
 public class RsaController {
 	
-	
+	/*
+	 * 初始化页面并生成公钥私钥
+	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String login(Model model) {
 	   
@@ -78,6 +80,7 @@ public class RsaController {
 	@RequestMapping(value = "/encrypt")
 	@ResponseBody
 	public void encrypt(Model model) {
+	//从前端获取e,n,明文mingwen
 		int e = MVCUtil.getIntParam("e");
 		int n = MVCUtil.getIntParam("n");
 		String mingwen = MVCUtil.getParam("mingwen");
@@ -92,6 +95,7 @@ public class RsaController {
 			msg = "输入明文不能为空";
 					
 		}
+		//若消息不符合规范则返回错误信息
 		if (StringUtils.isNotBlank(msg)) {
 			ajaxdata = new AjaxData(false, null, msg);
 	           MVCUtil.ajaxJson(ajaxdata);
